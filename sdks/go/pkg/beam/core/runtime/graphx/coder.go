@@ -149,19 +149,22 @@ func (b *CoderUnmarshaller) WindowCoder(id string) (*coder.WindowCoder, error) {
 		return nil, err
 	}
 
-	w := urnToWindowCoder(c.GetSpec().GetUrn())
+	w, err := urnToWindowCoder(c.GetSpec().GetUrn())
+	if err != nil {
+		return nil, err
+	}
 	b.windowCoders[id] = w
 	return w, nil
 }
 
-func urnToWindowCoder(urn string) *coder.WindowCoder {
+func urnToWindowCoder(urn string) (*coder.WindowCoder, error) {
 	switch urn {
 	case urnGlobalWindow:
-		return coder.NewGlobalWindow()
+		return coder.NewGlobalWindow(), nil
 	case urnIntervalWindow:
-		return coder.NewIntervalWindow()
+		return coder.NewIntervalWindow(), nil
 	default:
-		panic(fmt.Sprintf("Failed to translate URN to window coder, unexpected URN: %v", urn))
+		return nil, errors.New(fmt.Sprintf("Failed to translate URN to window coder, unexpected URN: %v", urn))
 	}
 }
 
